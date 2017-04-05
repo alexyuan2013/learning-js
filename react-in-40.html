@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+  <header>
+    <meta charset="utf-8">
+    <title>React in 40 lines</title>
+    <style media="screen">
+      .like-btn{font-size: 50px;}
+    </style>
+  </header>
+  <body>
+    <div class="wrapper">
+      <button class="like-btn">
+        <span class="like-text">点赞</span>
+        <span>👍</span>
+      </button>
+      <div class="wrapper1"></div>
+      <div class="wrapper2"></div>
+      <div class="wrapper3"></div>
+    </div>
+  </body>
+  <script type="text/javascript">
+    //随手写的版本
+    const button = document.querySelector('.like-btn');
+    const buttonText = document.querySelector('.like-text');
+    let isLiked = false;
+    button.addEventListener('click', function(){
+      isLiked = !isLiked;
+      if(isLiked){
+        buttonText.innerHTML = '取消';
+      } else {
+        buttonText.innerHTML = '点赞';
+      }
+    });
+    //可复用版本-结构复用
+    class LikeButton1 {
+      render(){
+        return `
+          <button class="like-btn">
+            <span class="like-text">点赞</span>
+            <span>👍</span>
+          </button>
+        `;
+      }
+    }
+    const wrapper1 = document.querySelector('.wrapper1');
+    const likeButton1 = new LikeButton1();
+    wrapper1.innerHTML += likeButton1.render();
+    //可复用版本-添加Dom事件
+    const createDomFromString = (domString) => {
+      const div = document.createElement('div');
+      div.innerHTML = domString;
+      return div;
+    }
+    class LikeButton2 {
+      constructor() {
+        this.state = {isLiked: false};
+      }
+
+      changeLikeText(){
+        const likeText = this.el.querySelector('.like-text');
+        this.state.isLiked = !this.state.isLiked;
+        if(this.state.isLiked){
+          likeText.innerHTML = '取消';
+        } else {
+          likeText.innerHTML = '点赞';
+        }
+      }
+      render(){
+        this.el = createDomFromString(`
+          <button class="like-btn">
+            <span class="like-text">点赞</span>
+            <span>👍</span>
+          </button>
+        `);
+        this.el.addEventListener('click', this.changeLikeText.bind(this), false);
+        return this.el;
+      }
+    }
+    const likeButton2 = new LikeButton2();
+    const wrapper2 = document.querySelector('.wrapper2');
+    wrapper2.appendChild(likeButton2.render());
+    //根据状态更新DOM
+    class LikeButton3 {
+      constructor() {
+        this.state = {isLiked: false};
+      }
+      setState(state){
+        const oldEl = this.el;
+        this.state = state;
+        this.el = this.render();
+        if(this.onStateChange){
+          this.onStateChange(oldEl, this.el);
+        }
+      }
+      changeLikeText(){
+        this.setState({
+          isLiked: !this.state.isLiked
+        });
+      }
+      render(){
+        this.el = createDomFromString(`
+          <button class='like-btn'>
+            <span class='like-text'>${this.state.isLiked ? '取消' : '点赞'}</span>
+            <span>👍</span>
+          </button>
+        `);
+        this.el.addEventListener('click', this.changeLikeText.bind(this), false);
+        return this.el;
+      }
+    }
+    const likeButton3 = new LikeButton3();
+    const wrapper3 = document.querySelector('.wrapper3');
+    wrapper3.appendChild(likeButton3.render());
+    likeButton3.onStateChange = (oldEl, newEl) => {
+      wrapper3.insertBefore(newEl, oldEl);
+      wrapper3.removeChild(oldEl);
+    }
+  </script>
+</html>
