@@ -16,6 +16,7 @@
       <div class="wrapper1"></div>
       <div class="wrapper2"></div>
       <div class="wrapper3"></div>
+      <div class="wrapper4"></div>
     </div>
   </body>
   <script type="text/javascript">
@@ -115,5 +116,53 @@
       wrapper3.insertBefore(newEl, oldEl);
       wrapper3.removeChild(oldEl);
     }
+    //进一步抽象
+    class Component {
+      constructor(props = {}){
+        this.props = props;
+      }
+      setState(state){
+        const oldEl = this.el;
+        this.state = state;
+        this.el = this.renderDom();
+        if(this.onStateChange){
+          this.onStateChange(oldEl, this.el);
+        }
+      }
+      renderDom(){
+        this.el = createDomFromString(this.render());
+        if(this.onClick){
+          this.el.adaddEventListener('click', this.onClick.bind(this), false);
+        }
+        return this.el;
+      }
+    }
+    const mount = (wrapper, component) => {
+      wrapper.appendChild(component.renderDom());
+      component.onStateChange = (oldEl, newEl) => {
+        wrapper.insertBefor(newEl, oldEl);
+        wrapper.removeChild(oldEl);
+      }
+    }
+    class LikeButton4 extends Component {
+      constructor(props){
+        super(props);
+        this.state = {isLiked: false};
+      }
+      onClick() {
+        this.setState({isLiked: !this.state.isLiked});
+      }
+      render() {
+        return `
+          <button class='like-btn'>
+            <span class='like-text'>${this.props.word || ''} ${this.state.isLiked ? '取消' : '点赞'}</span>
+            <span>👍</span>
+          </button>
+        `;
+      }
+    }
+    const likeButton4 = new LikeButton4({word: 'hello'});
+    const wrapper4 = document.querySelector('.wrapper4');
+    mount(wrapper4, likeButton4);
   </script>
 </html>
