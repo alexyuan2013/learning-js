@@ -132,7 +132,7 @@
       renderDom(){
         this.el = createDomFromString(this.render());
         if(this.onClick){
-          this.el.adaddEventListener('click', this.onClick.bind(this), false);
+          this.el.addEventListener('click', this.onClick.bind(this), false);
         }
         return this.el;
       }
@@ -140,7 +140,7 @@
     const mount = (wrapper, component) => {
       wrapper.appendChild(component.renderDom());
       component.onStateChange = (oldEl, newEl) => {
-        wrapper.insertBefor(newEl, oldEl);
+        wrapper.insertBefore(newEl, oldEl);
         wrapper.removeChild(oldEl);
       }
     }
