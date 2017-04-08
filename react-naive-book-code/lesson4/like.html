@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>lesson 4 - like button</title>
+    <style media="screen">
+      .like-btn{font-size: 50px;}
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+    </div>
+    <div class="wrapper1">
+    </div>
+    <!--js-->
+    <script>
+      const createDOMFromString = (domString) => {
+        const div = document.createElement('div');
+        div.innerHTML = domString;
+        return div;
+      }
+      const mount = (compnent, wrapper) => {
+        wrapper.appendChild(compnent._renderDOM());
+        compnent.onStateChange = (oldEl, newEl) => {
+          wrapper.insertBefore(newEl, oldEl);
+          wrapper.removeChild(oldEl);
+        }
+      }
+      class Component {
+        constructor(props={}){
+          this.props = props;
+        }
+        setState(state){
+          const oldEl = this.el;
+          this.state = state;
+          this.el = this._renderDOM();
+          if(this.onStateChange){
+            this.onStateChange(oldEl, this.el);
+          }
+        }
+        _renderDOM(){
+          this.el = createDOMFromString(this.render());
+          if(this.onClick){
+            this.el.addEventListener('click', this.onClick.bind(this), false);
+          }
+          return this.el;
+        }
+      }
+      class LikeButton extends Component{
+        constructor(props){
+          super(props);
+          this.state = {isLiked: false};
+        }
+        
+        onClick(){
+          this.setState({isLiked: !this.state.isLiked});
+        }
+        render(){
+          return `
+            <button class="like-btn" style="background-color: ${this.props.bgColor}">
+              <span class="like-text">${this.state.isLiked ? '取消' : '点赞'}</span>
+              <span>👍</span>
+            </button>
+          `;
+        }
+      }
+      const wrapper = document.querySelector('.wrapper');
+      const likeButton = new LikeButton({bgColor: 'red'});
+      mount(likeButton, wrapper);
+      //red blue button
+      class RedBlueButton extends Component {
+        constructor(props){
+          super(props);
+          this.state = {
+            color: 'red'
+          };
+        }
+        onClick(){
+          this.setState(this.state.color === 'red' ? {color:'blue'} : {color:'red'});
+        }
+        render(){
+          return `
+            <div style="color: ${this.state.color}; font-size: 50px">${this.state.color}</div>
+          `;
+        }
+      }
+      const wrapper1 = document.querySelector('.wrapper1');
+      mount(new RedBlueButton(), wrapper1);
+    </script>
+  </body>
+</html>
