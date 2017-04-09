@@ -49,6 +49,26 @@ class Footer extends Component {
     );
   }
 }
+const users = [
+  {username: 'Jerry', age: 21, gender: 'male'},
+  {username: 'Tomy', age: 22, gender: 'male'},
+  {usernmae: 'Lily', age: 19, gender: 'female'},
+  {username: 'Lucy', age: 20, gender: 'female'}
+]
+
+class User extends Component {
+  render(){
+    const {user} = this.props;
+    return (
+      <div>
+        <div>姓名：{user.username}</div>
+        <div>年龄：{user.age}</div>
+        <div>性别：{user.gender}</div>
+        <hr />
+      </div>
+    );
+  }
+}
 class Index extends Component {
   constructor(){
     super();
@@ -64,6 +84,17 @@ class Index extends Component {
     });
   }
   render() {
+    const usersElements = [];
+    for(let user of users){
+      usersElements.push(
+        <div>
+          <div>姓名：{user.username}</div>
+          <div>年龄：{user.age}</div>
+          <div>性别：{user.gender}</div>
+          <hr />
+        </div>
+      );
+    }
     return (
       <div>
         <Header />
@@ -72,6 +103,17 @@ class Index extends Component {
           wordings={this.state} 
           onClick={() => console.log('click on like button')}/>
         <button onClick={this.handleClickChange.bind(this)}>修改 wordings</button>
+        {users.map((user, i) => {
+          return (
+            <div key={i}>
+              <div>姓名：{user.username}</div>
+              <div>年龄：{user.age}</div>
+              <div>性别：{user.gender}</div>
+              <hr />
+            </div>
+          );
+        })}
+        {users.map((user, i) => <User key={i} user={user} />)}
         <Footer />
       </div>
     );
