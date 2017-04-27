@@ -1,0 +1,24 @@
+{
+  "name": "time_tracking_app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "npm run server",
+    "server": "babel-node server.js"
+  },
+  "keywords": [
+    "react"
+  ],
+  "author": "alex",
+  "license": "ISC",
+  "dependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-core": "^6.24.1",
+    "babel-preset-es2015": "^6.24.1",
+    "body-parser": "^1.17.1",
+    "express": "^4.15.2",
+    "fs": "0.0.1-security",
+    "path": "^0.12.7"
+  }
+}
