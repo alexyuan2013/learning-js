@@ -1,23 +1,20 @@
 const TimersDashboard = React.createClass({
   getInitialState: function(){
     return {
-      timers: [
-        {
-          title: 'Practice squat',
-          project: 'Gym Chores',
-          id: uuid.v4(),
-          elapsed: 5456090,
-          runningSince: Date.now()
-        },
-        {
-          title: 'Bake squash',
-          project: 'Kitchen Chores',
-          id: uuid.v4(),
-          elapsed: 1273998,
-          runningSince: null
-        }
-      ]
+      timers: []
     }
+  },
+  componentDidMount: function(){
+    this.loadTimersFromServer()
+    this.loadTimersInterval = setInterval(this.loadTimersFromServer, 5000)
+  },
+  loadTimersFromServer: function(){
+    client.getTimers((serverTimers) => (
+      this.setState({timers: serverTimers})
+    ))
+  },
+  componentWillUmmount: function(){
+    clearInterval(this.loadTimersInterval)
   },
   handleCreateFromSubmit: function(timer){
     this.createTimer(timer)
@@ -27,6 +24,7 @@ const TimersDashboard = React.createClass({
     this.setState({
       timers: this.state.timers.concat(t)
     })
+    client.createTimer(t)
   },
   handleEditFormSubmit: function(attrs){
     this.updateTimer(attrs)
@@ -41,6 +39,7 @@ const TimersDashboard = React.createClass({
         }
       })
     })
+    client.updateTimer(attrs)
   },
   handleStartClick: function(timerId){
     this.startTimer(timerId)
@@ -62,6 +61,10 @@ const TimersDashboard = React.createClass({
         }
       })
     })
+    client.startTimer({
+      id: timerId,
+      start: now
+    })
   },
   stopTimer: function(timerId){
     const now = Date.now()
@@ -75,11 +78,16 @@ const TimersDashboard = React.createClass({
         }
       })
     })
+    client.stopTimer({
+      id: timerId,
+      stop: now
+    })
   },
   deleteTimer: function(timerId){
     this.setState({
       timers: this.state.timers.filter( t => t.id !== timerId )
     })
+    client.deleteTimer({ id: timerId})
   },
   render: function(){
     return (
